@@ -13,7 +13,8 @@ class AcGamePlayground {
     }
 
     get_random_color() {
-        let colors = ['blue', 'green', 'pink', 'purple', 'red'];
+        let colors = ['rgb(255, 170, 93)', 'rgb(228, 72, 0)', 'rgb(2, 177, 173)', 'rgb(240, 225, 176)',
+            'rgb(122, 168, 93)', 'rgb(215, 131, 129)', 'rgb(132, 200, 173)'];
         return colors[Math.floor(Math.random() * colors.length)]
     }
 
