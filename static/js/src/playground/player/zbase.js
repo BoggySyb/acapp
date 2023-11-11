@@ -137,7 +137,7 @@ class Player extends AcGameObject {
 
         for (let i = 0; i < 20 + Math.random() * 10; i ++) {
             let x = this.x, y = this.y;
-            let radius = this.radius * Math.random() * 0.2;
+            let radius = this.radius * Math.random() * 0.15;
             let angle = Math.PI * 2 * Math.random();
             let vx = Math.cos(angle), vy = Math.sin(angle);
             let color = this.color;

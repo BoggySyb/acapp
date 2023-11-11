@@ -302,7 +302,7 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
 
         for (let i = 0; i < 20 + Math.random() * 10; i ++) {
             let x = this.x, y = this.y;
-            let radius = this.radius * Math.random() * 0.2;
+            let radius = this.radius * Math.random() * 0.15;
             let angle = Math.PI * 2 * Math.random();
             let vx = Math.cos(angle), vy = Math.sin(angle);
             let color = this.color;
@@ -538,6 +538,8 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
 
         this.$register.hide();
 
+        this.$acwing_login = this.$settings.find('.ac-game-settings-acwing img')
+
         this.root.$ac_game.append(this.$settings);
 
         this.start();
@@ -549,8 +551,14 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
     }
 
     add_listening_events() {
+        let outer = this;
+
         this.add_listening_events_register();
         this.add_listening_events_login();
+
+        this.$acwing_login.click(function() {
+            outer.acwing_login();
+        });
     }
 
     add_listening_events_login() {
@@ -573,6 +581,18 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
         this.$register_submit.click(function () {
            outer.register_on_remote();
         });
+    }
+
+    acwing_login() {
+        $.ajax({
+            url: 'https://app6206.acapp.acwing.com.cn/settings/acwing/apply_code/',
+            type: "GET",
+            success: function(resp) {
+                if (resp.result === "success") {
+                    window.location.replace(resp.apply_code_url);
+                }
+            },
+        })
     }
 
     login_on_remote() { // 在远程服务器上登录
