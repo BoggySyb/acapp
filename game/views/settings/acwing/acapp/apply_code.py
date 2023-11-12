@@ -11,14 +11,16 @@ def get_state():
 
 def apply_code(request):
     appid = "6206"
-    redirect_uri = quote("https://app6206.acapp.acwing.com.cn/settings/acwing/web/receive_code/")
+    redirect_uri = quote("https://app6206.acapp.acwing.com.cn/settings/acwing/acapp/receive_code/")
     scope = "userinfo"
     state = get_state()
     # redis 储存 state 2小时
     cache.set(state, True, 7200)
 
-    apply_code_url = "https://www.acwing.com/third_party/api/oauth2/web/authorize/"
     return JsonResponse({
         'result': 'success',
-        'apply_code_url': apply_code_url + "?appid=%s&redirect_uri=%s&scope=%s&state=%s" % (appid, redirect_uri, scope, state),
+        'appid': appid,
+        'redirect_uri': redirect_uri,
+        'scope': scope,
+        'state': state,
     })

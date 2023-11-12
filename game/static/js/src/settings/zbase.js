@@ -99,8 +99,71 @@ class Settings {
     }
 
     start() {
-        this.getinfo();
-        this.add_listening_events();
+        if (this.platform === "web") {
+            this.getinfo_web();
+            this.add_listening_events();
+        } else {
+            this.getinfo_acapp();
+        }
+    }
+
+    acapp_login(appid, redirect_uri, scope, state) {
+        let outer = this;
+
+        this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp) {
+            if (resp.result === "success") {
+                outer.username = resp.username;
+                outer.photo = resp.photo;
+                outer.hide();
+                outer.root.menu.show();
+            }
+        });
+    }
+    getinfo_acapp() {
+        let outer = this;
+
+        $.ajax({
+            url: "https://app6206.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+            type: "GET",
+            success: function (resp) {
+                if (resp.result === "success") {
+                    outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
+                }
+            }
+        })
+    }
+
+    acwing_login() {
+        $.ajax({
+            url: 'https://app6206.acapp.acwing.com.cn/settings/acwing/web/apply_code/',
+            type: "GET",
+            success: function(resp) {
+                if (resp.result === "success") {
+                    window.location.replace(resp.apply_code_url);
+                }
+            },
+        })
+    }
+    getinfo_web() {
+        let outer = this;
+
+        $.ajax({
+            url: "https://app6206.acapp.acwing.com.cn/settings/getinfo/",
+            type: "GET",
+            data: {
+                platform: outer.platform,
+            },
+            success: function(resp) {
+                if (resp.result === "success") {
+                    outer.username = resp.username;
+                    outer.photo = resp.photo;
+                    outer.hide();
+                    outer.root.menu.show();
+                } else {
+                    outer.login();
+                }
+            }
+        })
     }
 
     add_listening_events() {
@@ -134,18 +197,6 @@ class Settings {
         this.$register_submit.click(function () {
            outer.register_on_remote();
         });
-    }
-
-    acwing_login() {
-        $.ajax({
-            url: 'https://app6206.acapp.acwing.com.cn/settings/acwing/apply_code/',
-            type: "GET",
-            success: function(resp) {
-                if (resp.result === "success") {
-                    window.location.replace(resp.apply_code_url);
-                }
-            },
-        })
     }
 
     login_on_remote() { // 在远程服务器上登录
@@ -220,28 +271,6 @@ class Settings {
     register() { // 打开注册界面
         this.$login.hide();
         this.$register.show();
-    }
-
-    getinfo() {
-        let outer = this;
-
-        $.ajax({
-            url: "https://app6206.acapp.acwing.com.cn/settings/getinfo/",
-            type: "GET",
-            data: {
-                platform: outer.platform,
-            },
-            success: function(resp) {
-                if (resp.result === "success") {
-                    outer.username = resp.username;
-                    outer.photo = resp.photo;
-                    outer.hide();
-                    outer.root.menu.show();
-                } else {
-                    outer.login();
-                }
-            }
-        })
     }
 
     show() {

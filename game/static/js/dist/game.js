@@ -257,7 +257,8 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
         this.spend_time += this.timedelta / 1000;
         if (!this.is_me) {
             if (this.spend_time > 3 && Math.random() < 1 / 300) {
-                let target = this.playground.players[0];
+                let i = Math.floor(Math.random() * this.playground.players.length);
+                let target = this.playground.players[i];
                 let tx = target.x + target.vx * target.speed / 1000 * 0.3;
                 let ty = target.y + target.vy * target.speed / 1000 * 0.3;
                 this.shoot_fireball(tx, ty);
@@ -546,8 +547,71 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
     }
 
     start() {
-        this.getinfo();
-        this.add_listening_events();
+        if (this.platform === "web") {
+            this.getinfo_web();
+            this.add_listening_events();
+        } else {
+            this.getinfo_acapp();
+        }
+    }
+
+    acapp_login(appid, redirect_uri, scope, state) {
+        let outer = this;
+
+        this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp) {
+            if (resp.result === "success") {
+                outer.username = resp.username;
+                outer.photo = resp.photo;
+                outer.hide();
+                outer.root.menu.show();
+            }
+        });
+    }
+    getinfo_acapp() {
+        let outer = this;
+
+        $.ajax({
+            url: "https://app6206.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+            type: "GET",
+            success: function (resp) {
+                if (resp.result === "success") {
+                    outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
+                }
+            }
+        })
+    }
+
+    acwing_login() {
+        $.ajax({
+            url: 'https://app6206.acapp.acwing.com.cn/settings/acwing/web/apply_code/',
+            type: "GET",
+            success: function(resp) {
+                if (resp.result === "success") {
+                    window.location.replace(resp.apply_code_url);
+                }
+            },
+        })
+    }
+    getinfo_web() {
+        let outer = this;
+
+        $.ajax({
+            url: "https://app6206.acapp.acwing.com.cn/settings/getinfo/",
+            type: "GET",
+            data: {
+                platform: outer.platform,
+            },
+            success: function(resp) {
+                if (resp.result === "success") {
+                    outer.username = resp.username;
+                    outer.photo = resp.photo;
+                    outer.hide();
+                    outer.root.menu.show();
+                } else {
+                    outer.login();
+                }
+            }
+        })
     }
 
     add_listening_events() {
@@ -581,18 +645,6 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
         this.$register_submit.click(function () {
            outer.register_on_remote();
         });
-    }
-
-    acwing_login() {
-        $.ajax({
-            url: 'https://app6206.acapp.acwing.com.cn/settings/acwing/apply_code/',
-            type: "GET",
-            success: function(resp) {
-                if (resp.result === "success") {
-                    window.location.replace(resp.apply_code_url);
-                }
-            },
-        })
     }
 
     login_on_remote() { // 在远程服务器上登录
@@ -667,28 +719,6 @@ requestAnimationFrame(AC_GAME_ANIMATION);class GameMap extends AcGameObject {
     register() { // 打开注册界面
         this.$login.hide();
         this.$register.show();
-    }
-
-    getinfo() {
-        let outer = this;
-
-        $.ajax({
-            url: "https://app6206.acapp.acwing.com.cn/settings/getinfo/",
-            type: "GET",
-            data: {
-                platform: outer.platform,
-            },
-            success: function(resp) {
-                if (resp.result === "success") {
-                    outer.username = resp.username;
-                    outer.photo = resp.photo;
-                    outer.hide();
-                    outer.root.menu.show();
-                } else {
-                    outer.login();
-                }
-            }
-        })
     }
 
     show() {
