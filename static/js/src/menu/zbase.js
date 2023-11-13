@@ -2,21 +2,21 @@ class AcGameMenu {
     constructor(root) {
         this.root = root;
         this.$menu = $(`
-            <div class="ac_game_menu"> 
-                <div class="ac_game_menu_field">
-                    <div class="ac_game_menu_field_item ac_game_menu_field_single_mode">单人模式</div>
+            <div class="ac-game-menu"> 
+                <div class="ac-game-menu-field">
+                    <div class="ac-game-menu-field-item ac-game-menu-field-single-mode">单人模式</div>
                     <br>
-                    <div class="ac_game_menu_field_item ac_game_menu_field_multi_mode">多人模式</div>
+                    <div class="ac-game-menu-field-item ac-game-menu-field-multi-mode">多人模式</div>
                     <br>
-                    <div class="ac_game_menu_field_item ac_game_menu_field_setting">设置</div>
+                    <div class="ac-game-menu-field-item ac-game-menu-field-setting">设置</div>
                 </div>
             </div>
         `);
         this.$menu.hide();
         this.root.$ac_game.append(this.$menu);
-        this.$single = this.$menu.find('.ac_game_menu_field_single_mode');
-        this.$multi = this.$menu.find('.ac_game_menu_field_multi_mode');
-        this.$settings = this.$menu.find('.ac_game_menu_field_setting');
+        this.$single = this.$menu.find('.ac-game-menu-field-single-mode');
+        this.$multi = this.$menu.find('.ac-game-menu-field-multi-mode');
+        this.$settings = this.$menu.find('.ac-game-menu-field-setting');
 
         this.start();
     }
